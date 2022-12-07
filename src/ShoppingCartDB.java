@@ -93,13 +93,12 @@ public class ShoppingCartDB {
 
             case ADD:
                 // scan for incoming items after add command
-                String[] items = scan.nextLine().trim().split(" ");
-                System.out.println( "ADD fruits to user's cart command");
+                String[] items = scan.nextLine().trim().replace(",", "").split(" "); // trims, split string to array
                 addAction(items);
                 break;
 
             case LIST:
-                System.out.println("print out all shopping cart of usersLIST command");
+                listAction();
                 break;
 
             case SAVE:
@@ -107,7 +106,7 @@ public class ShoppingCartDB {
                 break;
 
             case USERS:
-                System.out.println("print all USERS names command");
+                listUsers();
                 break;
 
             default:
@@ -134,8 +133,35 @@ public class ShoppingCartDB {
         }
     }
     
+    // to add items to arrayList of currentUser
     public void addAction(String[] items) {
+        // get ArrayList of current user
+        ArrayList<String> selectedArray = this.db.userMap.get(this.currentUser);
+        // For Each loop to check for all items in array
+        for (String item : items) {
+            // filters duplicates
+            if (!selectedArray.contains(item)) {
+                selectedArray.add(item);
+                System.out.println(item + " added to cart");
+            }
+        }
+    }
 
+    public void listAction() {
+        // get value array base on key(currentUser)
+        ArrayList<String> arrayList = this.db.userMap.get(this.currentUser);
+        // print out all values in array
+        for (int i = 0; i < arrayList.size(); i++) {
+            System.out.printf("%d. %s\n", i + 1, arrayList.get(i));
+        }
+    }
+
+    public void listUsers() {
+        int i = 0;
+        for (String key : this.db.userMap.keySet()) {
+            i++;
+            System.out.printf("%d. %s\n", i, key);
+        }
     }
 
 }
