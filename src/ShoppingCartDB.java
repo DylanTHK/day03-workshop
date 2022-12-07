@@ -19,13 +19,15 @@ public class ShoppingCartDB {
     
     private static final List<String> VALID_COMMANDS = Arrays.asList(
         LOGIN, ADD, LIST, USERS, EXIT);
-        
+    
+    // initialise temporary variables
     private String currentUser;
-    private CartDBInMemory db; // creates database object with hashmap
+    private CartDBInMemory db; 
 
-    // public ShoppingCartDB() {
-    //     this.db = new CartDBInMemory();
-    // }
+    // Constructor to initialise instance of hashmap database 
+    public ShoppingCartDB() {
+        this.db = new CartDBInMemory();
+    }
 
     // method to control app flow
     public void startShell() {
@@ -78,14 +80,16 @@ public class ShoppingCartDB {
         Scanner scan = new Scanner(input);
         String command = scan.next();
 
+        // detect command keywords
         switch (command) {
+            // 
             case LOGIN:
                 System.out.println("execute LOGIN command");
                 String userName = scan.nextLine().trim();
                 // set user as currentUser
                 this.currentUser = userName;
-                System.out.println("Current logged in user: " + currentUser);
-                
+                System.out.println("Current logged in user: " + this.currentUser);
+                // calls login action methods
                 loginAction(userName);
                 break;
 
@@ -113,9 +117,15 @@ public class ShoppingCartDB {
         scan.close();
     }
 
+    // method to assist in login command
     public void loginAction(String username) {
+        //  add user to hashmap
+        this.db.userMap.put(username, new ArrayList<String>());
+        System.out.println(this.db.userMap);
+        
         // check if user exists in hashmap key
-
+        
+        
         // if does not exist create new user name with new value array
 
         // else print login message and print cart content
