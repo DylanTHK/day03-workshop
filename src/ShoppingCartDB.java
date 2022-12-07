@@ -84,18 +84,18 @@ public class ShoppingCartDB {
         switch (command) {
             // 
             case LOGIN:
-                System.out.println("execute LOGIN command");
                 String userName = scan.nextLine().trim();
                 // set user as currentUser
                 this.currentUser = userName;
-                System.out.println("Current logged in user: " + this.currentUser);
                 // calls login action methods
                 loginAction(userName);
                 break;
 
             case ADD:
+                // scan for incoming items after add command
                 String[] items = scan.nextLine().trim().split(" ");
                 System.out.println( "ADD fruits to user's cart command");
+                addAction(items);
                 break;
 
             case LIST:
@@ -119,16 +119,24 @@ public class ShoppingCartDB {
 
     // method to assist in login command
     public void loginAction(String username) {
-        //  add user to hashmap
-        this.db.userMap.put(username, new ArrayList<String>());
-        System.out.println(this.db.userMap);
-        
         // check if user exists in hashmap key
-        
-        
-        // if does not exist create new user name with new value array
+        this.currentUser = username;
+        if (this.db.userMap.containsKey(username)) {
+            // print welcome message
+            System.out.printf("%s, your cart contains the following items\n", this.currentUser);
+            // call listAction method of items 
+            System.out.println("calls method to print out lines of fruits"); // ******$$ add later
 
-        // else print login message and print cart content
+        } else { 
+            // if does not exist create new user name with new value array
+            this.db.userMap.put(username, new ArrayList<String>());
+            System.out.printf("%s, your cart is empty\n", this.currentUser);
+        }
     }
+    
+    public void addAction(String[] items) {
+
+    }
+
 }
 
