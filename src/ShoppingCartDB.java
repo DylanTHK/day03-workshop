@@ -1,6 +1,12 @@
 // Shopping Cart Class to create
 
+import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,15 +24,40 @@ public class ShoppingCartDB {
     private static final String EXIT = "exit";
     
     private static final List<String> VALID_COMMANDS = Arrays.asList(
-        LOGIN, ADD, LIST, USERS, EXIT);
+        LOGIN, ADD, LIST, SAVE, USERS, EXIT);
     
     // initialise temporary variables
-    private String currentUser;
-    private CartDBInMemory db; 
+    private String currentUser; // to track active user
+    private CartDBInMemory db; // for Hashmap
+    private String baseFolder;
 
-    // Constructor to initialise instance of hashmap database 
+    // Constructor (DEFAULT) to initialise instance of hashmap database 
     public ShoppingCartDB() {
-        this.db = new CartDBInMemory();
+        this.baseFolder = "db"; //default name for new folder
+        this.setup();
+        this.db = new CartDBInMemory(this.baseFolder);
+    }
+
+    // Constructor (OVERLOAD) initialise instance of hashmap with baseFolder input
+    // refer to MultiUserShoppingCart line 7 for input
+    public ShoppingCartDB(String baseFolderName) {
+        this.baseFolder = baseFolderName;
+        this.setup();
+        this.db = new CartDBInMemory(this.baseFolder);
+    }
+
+    // checks for existing directory, if none, create new directory
+    public void setup() {
+        // creates a path object instance with Fully Qualified Path
+        Path path = Paths.get(this.baseFolder);
+
+        if (!Files.isDirectory(path)) {
+            try {
+                Files.createDirectory(path);
+            } catch (IOException e) {
+                System.out.println("Error message: " + e.getMessage());
+            }
+        }
     }
 
     // method to control app flow
@@ -45,7 +76,7 @@ public class ShoppingCartDB {
 
             // check for exit keyword
             if (input.equals("exit")) {
-                System.out.println("Exiting");
+                System.out.println("Thank you for Shopping");
                 stop = true;
             }
             
@@ -88,25 +119,25 @@ public class ShoppingCartDB {
                 // set user as currentUser
                 this.currentUser = userName;
                 // calls login action methods
-                loginAction(userName);
+                this.loginAction(userName);
                 break;
 
             case ADD:
                 // scan for incoming items after add command
                 String[] items = scan.nextLine().trim().replace(",", "").split(" "); // trims, split string to array
-                addAction(items);
+                this.addAction(items);
                 break;
 
             case LIST:
-                listAction();
+                this.listAction();
                 break;
 
             case SAVE:
-                System.out.println("SAVE all inputs in hashmap and separate path file");
+                this.saveAction();
                 break;
 
             case USERS:
-                listUsers();
+                this.listUsers();
                 break;
 
             default:
@@ -124,11 +155,12 @@ public class ShoppingCartDB {
             // print welcome message
             System.out.printf("%s, your cart contains the following items\n", this.currentUser);
             // call listAction method of items 
-            System.out.println("calls method to print out lines of fruits"); // ******$$ add later
+            listAction();
 
         } else { 
             // if does not exist create new user name with new value array
             this.db.userMap.put(username, new ArrayList<String>());
+            // String to print for empty cart
             System.out.printf("%s, your cart is empty\n", this.currentUser);
         }
     }
@@ -161,6 +193,24 @@ public class ShoppingCartDB {
         for (String key : this.db.userMap.keySet()) {
             i++;
             System.out.printf("%d. %s\n", i, key);
+        }
+    }
+
+    public void saveAction() {
+        // create new db file with username 
+        String userFile = this.baseFolder + "/" + this.currentUser + ".db";
+        try {
+            FileWriter myWriter = new FileWriter(userFile);
+            BufferedWriter bufferedWriter = new BufferedWriter(myWriter);
+            // read through current user's Array
+            for (String line : db.userMap.get(this.currentUser)) {
+                // write words to file
+                bufferedWriter.write(line + "\n");
+            }
+            bufferedWriter.close();
+            System.out.println(this.currentUser + "'s data saved");
+        } catch (IOException e) {
+            e.getMessage();
         }
     }
 
