@@ -19,6 +19,7 @@ public class CartDBInMemory {
 
         // function to return true for a single file with .db
         FilenameFilter fileNameFilter = new FilenameFilter() {
+            // what are we overriding here? 
             @Override
             public boolean accept(File dir, String filename) {
                 // returns true if filename ends with .db
